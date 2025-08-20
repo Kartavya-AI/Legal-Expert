@@ -1,5 +1,12 @@
-streamlit
-langgraph
-langchain-openai
+fastapi
+uvicorn[standard]
+gunicorn
+pydantic
 python-dotenv
 langchain
+langchain-openai
+langchain-google-genai
+langgraph
+python-multipart
+httpx
+typing-extensions
