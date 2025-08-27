@@ -3,13 +3,15 @@ import logging
 from typing import List, Optional
 from contextlib import asynccontextmanager
 import traceback
-import time 
+
 from fastapi import FastAPI, HTTPException, BackgroundTasks, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.middleware.gzip import GZipMiddleware
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 import uvicorn
+import time
+
 
 from tool import run_agent
 
@@ -24,7 +26,8 @@ logger = logging.getLogger(__name__)
 class LegalQuery(BaseModel):
     query: str = Field(..., min_length=10, max_length=5000, description="The legal query from the user")
     
-    @validator('query')
+    @field_validator('query')
+    @classmethod
     def validate_query(cls, v):
         if not v.strip():
             raise ValueError('Query cannot be empty or just whitespace')
@@ -34,7 +37,8 @@ class UserAnswers(BaseModel):
     initial_query: str = Field(..., min_length=10, max_length=5000)
     answers: str = Field(..., min_length=10, max_length=10000, description="User's answers to the probing questions")
     
-    @validator('initial_query', 'answers')
+    @field_validator('initial_query', 'answers')
+    @classmethod
     def validate_fields(cls, v):
         if not v.strip():
             raise ValueError('Field cannot be empty or just whitespace')
@@ -277,7 +281,6 @@ async def api_info():
             "Indian legal framework specialization"
         ]
     }
-
 
 if __name__ == "__main__":
     # This is for development only
